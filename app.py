@@ -97,4 +97,11 @@ if st.button("Predict Segment"):
     st.markdown(f"<h2 style='color:#ff4b4b;'>Customer Segment: {prediction_class}</h2>", unsafe_allow_html=True)
 
     st.markdown("### Probability for each Segment")
-    prob_cols = st.column_
+    prob_cols = st.columns(len(prediction_proba[0]))
+    for i, col in enumerate(prob_cols):
+        col.markdown(f"**Segment {i}**")
+        col.progress(prediction_proba[0][i])
+
+    # Optional: show dataframe with probabilities
+    prob_df = pd.DataFrame(prediction_proba, columns=[f"Segment {i}" for i in range(prediction_proba.shape[1])])
+    st.dataframe(prob_df.style.format("{:.2f}"))

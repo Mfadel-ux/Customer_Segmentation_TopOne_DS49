@@ -113,17 +113,12 @@ if st.button("Predict Segment"):
     </div>
     """, unsafe_allow_html=True)
 
-    # Tambahan: Berikan penjelasan singkat tentang segmen (opsional)
+    # Menambahkan deskripsi untuk segmen
     segment_descriptions = {
-        0: "Pelanggan Loyal",
-        1: "Pelanggan Potensial",
-        2: "Pelanggan Tidak Aktif",
-        3: "Pelanggan Baru"
+        0: "Segmentation A.",
+        1: "Segmentation B.",
+        2: "Segmentation C.",
+        3: "Segmentation D."
     }
     
-    st.markdown(f"**Penjelasan:** Pelanggan ini diprediksi sebagai **{segment_descriptions.get(predicted_class, 'Tidak Diketahui')}**.")
-
-    # Show dataframe dengan probabilitas (2 desimal)
-    prob_df = pd.DataFrame(prediction_proba, columns=[f"Segment {i}" for i in range(prediction_proba.shape[1])])
-    st.dataframe(prob_df.style.format("{:.2f}"))
-
+    st.markdown(f"**Penjelasan:** {segment_descriptions.get(predicted_class, 'Tidak ada penjelasan untuk segmen ini.')}")

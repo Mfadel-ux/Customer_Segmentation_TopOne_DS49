@@ -115,11 +115,12 @@ if st.button("Predict Segment"):
 
     # Menambahkan deskripsi untuk segmen
     segment_descriptions = {
-        A: "Segmentation A.",
-        B: "Segmentation B.",
-        C: "Segmentation C.",
-        D: "Segmentation D."
+        0: "Segmentation A.",
+        1: "Segmentation B.",
+        2: "Segmentation C.",
+        3: "Segmentation D."
     }
     
     st.markdown(f"**Penjelasan:** {segment_descriptions.get(predicted_class, 'Tidak ada penjelasan untuk segmen ini.')}")
+
 

@@ -10,7 +10,6 @@ import numpy as np
 with open("best_xgb.pkl", "rb") as f:
     model = pickle.load(f)
 
-# Feature columns hasil one-hot encoding saat training
 with open("feature_cols.pkl", "rb") as f:
     feature_cols = pickle.load(f)
 
@@ -76,7 +75,7 @@ def encode_input_onehot(Age, Ever_Married, Gender, Graduated, Profession,
     }
     df = pd.DataFrame([data])
     
-    # One-hot encode categorical columns same as training
+    # One-hot encode categorical columns sama seperti training
     cat_cols = ["Ever_Married", "Gender", "Graduated", "Profession", "Var_1"]
     df = pd.get_dummies(df, columns=cat_cols)
     
@@ -102,8 +101,9 @@ if st.button("Predict Segment"):
     prob_cols = st.columns(len(prediction_proba[0]))
     for i, col in enumerate(prob_cols):
         col.markdown(f"**Segment {i}**")
-        col.progress(prediction_proba[0][i])
+        # konversi probabilitas 0-1 ke 0-100 untuk progress bar
+        col.progress(int(prediction_proba[0][i] * 100))
 
-    # Optional: show dataframe with probabilities
+    # Show dataframe dengan probabilitas (2 desimal)
     prob_df = pd.DataFrame(prediction_proba, columns=[f"Segment {i}" for i in range(prediction_proba.shape[1])])
     st.dataframe(prob_df.style.format("{:.2f}"))

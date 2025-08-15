@@ -82,7 +82,7 @@ if st.button("Predict Segment"):
                             Profession, Work_Experience, Spending_Score,
                             Family_Size, Var_1)
     
-    prediction_proba = XGBClassifier_Model.predict_proba(input_df)
+    prediction_proba = model.predict_proba(input_df)
     prediction_class = np.argmax(prediction_proba, axis=1)[0]
 
     st.markdown("### Prediction Result")
@@ -97,6 +97,7 @@ if st.button("Predict Segment"):
     # Optional: show dataframe with probabilities
     prob_df = pd.DataFrame(prediction_proba, columns=[f"Segment {i}" for i in range(prediction_proba.shape[1])])
     st.dataframe(prob_df.style.format("{:.2f}"))
+
 
 
 

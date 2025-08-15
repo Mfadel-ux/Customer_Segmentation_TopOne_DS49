@@ -1,14 +1,18 @@
+# app.py
 import streamlit as st
 import pickle
 import pandas as pd
 import numpy as np
-from xgboost import XGBClassifier
 
-
-
+# =========================
+# Load model & feature columns
+# =========================
 with open("best_xgb.pkl", "rb") as f:
     model = pickle.load(f)
-    
+
+with open("feature_cols.pkl", "rb") as f:
+    feature_cols = pickle.load(f)
+
 # =========================
 # App Header
 # =========================
@@ -72,7 +76,11 @@ def encode_input(Age, Ever_Married, Gender, Graduated, Profession,
         "Family_Size": Family_Size,
         "Var_1": ["Cat_1", "Cat_2", "Cat_3", "Cat_4", "Cat_5", "Cat_6"].index(Var_1)
     }
-    return pd.DataFrame([data])
+    df = pd.DataFrame([data])
+    
+    # Pastikan kolom sama urutannya dengan saat training
+    df = df[feature_cols]
+    return df
 
 # =========================
 # Prediction Button
@@ -89,17 +97,4 @@ if st.button("Predict Segment"):
     st.markdown(f"<h2 style='color:#ff4b4b;'>Customer Segment: {prediction_class}</h2>", unsafe_allow_html=True)
 
     st.markdown("### Probability for each Segment")
-    prob_cols = st.columns(len(prediction_proba[0]))
-    for i, col in enumerate(prob_cols):
-        col.markdown(f"**Segment {i}**")
-        col.progress(prediction_proba[0][i])
-
-    # Optional: show dataframe with probabilities
-    prob_df = pd.DataFrame(prediction_proba, columns=[f"Segment {i}" for i in range(prediction_proba.shape[1])])
-    st.dataframe(prob_df.style.format("{:.2f}"))
-
-
-
-
-
-
+    prob_cols = st.column_

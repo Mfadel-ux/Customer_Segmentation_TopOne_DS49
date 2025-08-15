@@ -49,3 +49,60 @@ with col1:
 with col2:
     Profession = st.selectbox("Profession", [
         "Artist", "Doctor", "Engineer", "Entertainment", "Executive",
+        "Healthcare", "Homemaker", "Lawyer", "Marketing"
+    ])
+    Work_Experience = st.number_input("Work Experience (years)", 0, 50, 5)
+    Spending_Score = st.number_input("Spending Score (0-100)", 0, 100, 50)
+
+with col3:
+    Family_Size = st.number_input("Family Size", 1, 20, 3)
+    Var_1 = st.selectbox("Var_1", ["Cat_1", "Cat_2", "Cat_3", "Cat_4", "Cat_5", "Cat_6"])
+
+# =========================
+# Encode Input
+# =========================
+def encode_input(Age, Ever_Married, Gender, Graduated, Profession,
+                 Work_Experience, Spending_Score, Family_Size, Var_1):
+    data = {
+        "Age": Age,
+        "Ever_Married": 1 if Ever_Married=="Yes" else 0,
+        "Gender": 1 if Gender=="Male" else 0,
+        "Graduated": 1 if Graduated=="Yes" else 0,
+        "Profession": [
+            "Artist", "Doctor", "Engineer", "Entertainment", "Executive",
+            "Healthcare", "Homemaker", "Lawyer", "Marketing"
+        ].index(Profession),
+        "Work_Experience": Work_Experience,
+        "Spending_Score": Spending_Score,
+        "Family_Size": Family_Size,
+        "Var_1": ["Cat_1", "Cat_2", "Cat_3", "Cat_4", "Cat_5", "Cat_6"].index(Var_1)
+    }
+    df = pd.DataFrame([data])
+    
+    # Pastikan kolom sama urutannya dengan training
+    df = df.reindex(columns=feature_cols, fill_value=0)
+    return df
+
+# =========================
+# Prediction Button
+# =========================
+if st.button("Predict Segment"):
+    input_df = encode_input(Age, Ever_Married, Gender, Graduated,
+                            Profession, Work_Experience, Spending_Score,
+                            Family_Size, Var_1)
+    
+    prediction_proba = model.predict_proba(input_df)
+    prediction_class = np.argmax(prediction_proba, axis=1)[0]
+
+    st.markdown("### Prediction Result")
+    st.markdown(f"<h2 style='color:#ff4b4b;'>Customer Segment: {prediction_class}</h2>", unsafe_allow_html=True)
+
+    st.markdown("### Probability for each Segment")
+    prob_cols = st.columns(len(prediction_proba[0]))
+    for i, col in enumerate(prob_cols):
+        col.markdown(f"**Segment {i}**")
+        col.progress(prediction_proba[0][i])
+
+    # Optional: show dataframe with probabilities
+    prob_df = pd.DataFrame(prediction_proba, columns=[f"Segment {i}" for i in range(prediction_proba.shape[1])])
+    st.dataframe(prob_df.style.format("{:.2f}"))

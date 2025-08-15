@@ -86,24 +86,44 @@ def encode_input_onehot(Age, Ever_Married, Gender, Graduated, Profession,
 # =========================
 # Prediction Button
 # =========================
+# =========================
+# Prediction Button
+# =========================
 if st.button("Predict Segment"):
     input_df = encode_input_onehot(Age, Ever_Married, Gender, Graduated,
                                    Profession, Work_Experience, Spending_Score,
                                    Family_Size, Var_1)
     
+    # Menjalankan prediksi probabilitas
     prediction_proba = model.predict_proba(input_df)
-    prediction_class = np.argmax(prediction_proba, axis=1)[0]
+    
+    # Mencari indeks dari probabilitas tertinggi
+    predicted_class = np.argmax(prediction_proba, axis=1)[0]
+    
+    # Mengambil nilai probabilitas tertinggi
+    predicted_proba_value = prediction_proba[0][predicted_class]
 
     st.markdown("### Prediction Result")
-    st.markdown(f"<h2 style='color:#ff4b4b;'>Customer Segment: {prediction_class}</h2>", unsafe_allow_html=True)
+    
+    # Menampilkan hanya satu hasil dengan probabilitas
+    st.markdown(f"""
+    <div style="background-color:#4B79A1;padding:20px;border-radius:10px">
+        <h2 style='color:#fff;text-align:center;'>Customer Segment: {predicted_class}</h2>
+        <h4 style='color:#fff;text-align:center;'>Probabilitas: {predicted_proba_value:.2%}</h4>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.markdown("### Probability for each Segment")
-    prob_cols = st.columns(len(prediction_proba[0]))
-    for i, col in enumerate(prob_cols):
-        col.markdown(f"**Segment {i}**")
-        # konversi probabilitas 0-1 ke 0-100 untuk progress bar
-        col.progress(int(prediction_proba[0][i] * 100))
+    # Tambahan: Berikan penjelasan singkat tentang segmen (opsional)
+    segment_descriptions = {
+        0: "Pelanggan Loyal",
+        1: "Pelanggan Potensial",
+        2: "Pelanggan Tidak Aktif",
+        3: "Pelanggan Baru"
+    }
+    
+    st.markdown(f"**Penjelasan:** Pelanggan ini diprediksi sebagai **{segment_descriptions.get(predicted_class, 'Tidak Diketahui')}**.")
 
     # Show dataframe dengan probabilitas (2 desimal)
     prob_df = pd.DataFrame(prediction_proba, columns=[f"Segment {i}" for i in range(prediction_proba.shape[1])])
     st.dataframe(prob_df.style.format("{:.2f}"))
+

@@ -2,11 +2,13 @@ import streamlit as st
 import pickle
 import pandas as pd
 import numpy as np
+from xgboost import XGBClassifier
 
 
 
 with open("best_xgb.pkl", "rb") as f:
     model = pickle.load(f)
+    
 # =========================
 # App Header
 # =========================
@@ -95,6 +97,7 @@ if st.button("Predict Segment"):
     # Optional: show dataframe with probabilities
     prob_df = pd.DataFrame(prediction_proba, columns=[f"Segment {i}" for i in range(prediction_proba.shape[1])])
     st.dataframe(prob_df.style.format("{:.2f}"))
+
 
 
 
